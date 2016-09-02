@@ -1,0 +1,2 @@
+# financial-manager
+angular application
