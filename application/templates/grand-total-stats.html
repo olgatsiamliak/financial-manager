@@ -1,0 +1,12 @@
+<!-- 	<svg height="400" width="400" style="margin: 10px auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="50" fill="#ffffff"></circle>
+        <path stroke="#FF0000" ng-repeat="path in paths" ng-attr-d="{{path}}" ng-attr-id="{{stats[$index].name}}"/>    
+    </svg>  -->
+<div class="diagramm-holder">
+        <div class="total-numbers-caterogy" style="display: none">{{number()}}</div>
+            <p class="y-coords-title">Категории</p>
+            <p class="x-coords-title">Проценты (%)</p>
+        <div class="length-diagramm-container">     
+        <div class="length-diagramm-gridline-y" ng-repeat="area in stats" style="width: {{area.percentage}}%; background: hsl({{bcolor($index).rgbaF}}, 100%, 68%); height: {{graphHeight()}}%; top: {{moveTop($index)}}%"><span class="graph-category-name">{{area.percentage}}%<br />{{area.name}}</span></div>                  
+        </div>
+</div>  

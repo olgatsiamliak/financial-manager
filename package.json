@@ -1,0 +1,15 @@
+{
+    "name": "FinancialBalance",
+    "version": "0.0.1",
+    "scripts": {
+        "start": "http-server -a localhost -p 8000 -c-0 ./application"
+    },
+    "dependencies": {
+        "bower": "latest",
+        "angular": "1.5.0",
+        "bootstrap": "3.3.6",
+        "jquery": "1.12.0",
+        "http-server": "latest"
+        }
+    
+}

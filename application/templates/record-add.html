@@ -1,0 +1,10 @@
+<div class="modal-body">
+    <div class="form-group">
+      <label for="add-price">Введите сумму</label>
+      <input type="number" class="form-control" id="add-price" ng-model="add.active.total" placeholder="Введите сумму">
+    </div>      
+    <p><label>Выбор категории</label></p>
+    <div>
+      <select ng-model="add.selected" class="form-control" name="repeatSelect" ng-options="category.name for category in add.choice"></select>
+    </div>
+</div>

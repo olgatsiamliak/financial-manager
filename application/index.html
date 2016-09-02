@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">  
+  <title>Статистика ваших финансов</title>
+  <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+  <script src="modules/jquery/dist/jquery.min.js"></script>
+  <script src="modules/angular/angular.min.js"></script>
+  <link rel="stylesheet" href="modules/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles/common.css">
+  <link rel="stylesheet" href="modules/bootstrap/dist/css/bootstrap-theme.min.css"> 
+  <script src="modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="js/financial-balance-module.js"></script>
+  <script src="js/fin-controller.js"></script>
+  <script src="js/fixed-filter.js"></script>
+  <script src="js/grand-total-stats-component.js"></script>
+  <script src="js/category-add-component.js"></script>
+  <script src="js/record-add-component.js"></script>
+  <script src="js/period-grand-total-component.js"></script> 
+   <script src="js/balance-stats.js"></script>  
+</head>
+<body ng-app="finBalance" ng-controller="FinCtrl as ctrl">
+  <div class="bg-container">
+     <header>
+      <div class="container">
+        <h1 class="header-title">Статистика ваших финансов</h1>
+        <h3 class="header-description">Контролируйте свои расходы</h3>
+      </div>
+    </header>
+
+    <nav>
+      <div class="container">
+         <ul class="nav nav-tabs" role="tablist">
+              <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Журнал</a></li>
+              <li role="presentation"><a href="#shopping" aria-controls="shopping" role="tab" data-toggle="tab">Все расходы</a></li>
+              <li role="presentation"><a href="#salary" aria-controls="salary" role="tab" data-toggle="tab">Все доходы</a></li>
+              <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Настройки</a></li>
+          </ul>
+      </div>
+     
+    </nav>
+
+    <div class="tab-content container">
+        <div role="tabpanel" class="tab-pane fade in active" id="home">
+            <div class="statistics-container">
+               <h2 class="block-title shopping-title">Расходы <span class="currency">{{ctrl.activeCurrency}}</span><span data-toggle="modal" data-target="#addMoney" class="add shopping-add" ng-click="ctrl.addRecord(ctrl.shoppingArea, ctrl.shoppingCategory)">+</span></h2>
+               <div class="amount-comtainer">
+                  <period-grand-total data="ctrl.shoppingArea"></period-grand-total>
+               </div>               
+            </div>
+            <div class="statistics-container">
+                <h2 class="block-title salary-title">Доходы <span class="currency">{{ctrl.activeCurrency}}</span><span data-toggle="modal" data-target="#addMoney" class="add salary-add" ng-click="ctrl.addRecord(ctrl.salaryArea, ctrl.salaryCategory)">+</span></h2>
+                <div class="amount-comtainer">
+                  <period-grand-total data="ctrl.salaryArea"></period-grand-total>
+               </div>  
+            </div>
+
+            <div class="statistics-container">
+                <h2 class="block-title balance-title">Баланс <span class="currency">{{ctrl.activeCurrency}}</span><span class="add balance-add">...</span></h2>
+                <div class="amount-comtainer">
+                  <balance-stats salary="ctrl.salaryArea" shopping="ctrl.shoppingArea"></balance-stats>
+               </div>                  
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane fade" id="shopping">
+                <h2>Все расходы <span class="currency">{{ctrl.activeCurrency}}</span></h2>
+                <div class="amount-comtainer">
+                      <p><kbd>Период</kbd>                           
+                          <select id="time" class="form-control">
+                              <option ng-repeat="period in ctrl.periods" ng-checked="period.name">{{period.name}}</option> 
+                          </select>
+                      </p>
+                      <div class="shopping-container">
+                          <p>&nbsp;<span class="amount bold-style">{{ctrl.totalSumm(ctrl.shoppingArea, area)|fixed: 2}}</span></p>
+
+                      </div>
+                 </div>
+                      <div class="shopping-diagram-container">
+                          <grand-total-stats data="ctrl.shoppingArea"></grand-total-stats>                             
+                      </div>
+                
+
+        </div>
+        <div role="tabpanel" class="tab-pane fade" id="salary">
+                <h2>Все доходы <span class="currency">{{ctrl.activeCurrency}}</span></h2>
+                    <div class="amount-comtainer">
+                    <p><kbd>Период</kbd> 
+                        <select class="form-control">
+                            <option ng-repeat="period in ctrl.periods">{{period.name}}</option> 
+                        </select>
+                    </p>
+                    <div class="salary-container">
+                        <p>&nbsp;<span class="amount bold-style">{{ctrl.totalSumm(ctrl.salaryArea, area)|fixed: 2}}</span></p>
+                    </div>
+                    <div class="salary-diagram-container">
+                       <grand-total-stats data="ctrl.salaryArea" category="ctrl.salaryCategory"></grand-total-stats> 
+                    </div>                    
+                </div>
+        </div>
+        <div role="tabpanel" class="tab-pane fade" id="settings">
+                <h2 class="block-title settings-title">Настройки</h2>
+                <div class="amount-comtainer">
+                <h3>Текущая валюта <span class="currency">{{ctrl.activeCurrency}}</span></h3>
+                <p><button type="button" data-toggle="modal" data-target="#currencyModal" class="btn btn-success" ng-click="ctrl.editCurrency(ctrl.activeCurrency)">Выбрать валюту</button></p>
+                </div>
+                 <h2 class="block-title shopping-title">Категории расходов <span data-toggle="modal" data-target="#addArea" class="add shopping-add" ng-click="ctrl.activeCategoryChange(ctrl.shoppingCategory)">+</span></h2>
+                 <div class="amount-comtainer">
+                      <category-add data="ctrl.shoppingCategory"></category-add>
+
+                 </div>
+                 <h2 class="block-title salary-title">Источники доходов <span data-toggle="modal" data-target="#addArea" class="add salary-add" ng-click="ctrl.activeCategoryChange(ctrl.salaryCategory)">+</span></h2>
+                 <div class="amount-comtainer">
+                       <category-add data="ctrl.salaryCategory"></category-add>
+                 </div>
+         </div>
+  </div>
+  </div>
+
+      <div class="modal fade" tabindex="-1" role="dialog" id="currencyModal">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="ctrl.cancel()"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">Выбрать валюту <span class="caret"></span></h4>
+            </div>
+            <div class="modal-body">
+                          <div class="radio" ng-repeat="currency in ctrl.currency">
+                              <label>
+                                <input type="radio" name="currency" id="optionsRadios1" value="{{currency.name}}" ng-model="ctrl.modelCurrency" ng-checked="currency.name == ctrl.activeCurrency">
+                                {{currency.name}}
+                              </label>
+                          </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="ctrl.cancelCurrency()">Отмена</button>
+              <button type="button" class="btn btn-success" ng-click="ctrl.updateCurrency()" data-dismiss="modal">Сохранить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="addMoney">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="ctrl.cancel()"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" ng-if="ctrl.activeArray == ctrl.shoppingArea">Сколько вы потратили сегодня?</h4>
+        <h4 class="modal-title" ng-if="ctrl.activeArray == ctrl.salaryArea">Сколько вы заработали сегодня?</h4>
+      </div>
+      <record-add record="ctrl.activeArray" active="ctrl.activeRecord" choice="ctrl.choice" selected="ctrl.selected"></record-add>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="ctrl.cancel()">Отмена</button>
+          <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="ctrl.addPrice()">Добавить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="addArea">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="ctrl.cancel()"><span aria-hidden="true">&times;</span></button>
+         <h4 class="modal-title">Добавить категорию</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <input type="text" class="form-control" id="add-price" placeholder="Введите категорию" ng-model="ctrl.activeCategory.name" />
+        </div>   
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="ctrl.cancel()">Отмена</button>
+        <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="ctrl.save()">Добавить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
